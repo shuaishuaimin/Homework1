@@ -23,16 +23,6 @@
     <ClInclude Include="d3dUtil.h" />
     <ClInclude Include="GameTimer.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\DirectX\d3d12book-master\Common\Camera.cpp" />
-    <ClCompile Include="..\..\DirectX\d3d12book-master\Common\d3dApp.cpp" />
-    <ClCompile Include="..\..\DirectX\d3d12book-master\Common\d3dUtil.cpp" />
-    <ClCompile Include="..\..\DirectX\d3d12book-master\Common\DDSTextureLoader.cpp" />
-    <ClCompile Include="..\..\DirectX\d3d12book-master\Common\GameTimer.cpp" />
-    <ClCompile Include="..\..\DirectX\d3d12book-master\Common\GeometryGenerator.cpp" />
-    <ClCompile Include="..\..\DirectX\d3d12book-master\Common\MathHelper.cpp" />
-    <ClCompile Include="InitDirect3DApp.cpp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
