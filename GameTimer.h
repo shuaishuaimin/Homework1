@@ -5,9 +5,12 @@
 
 class GameTimer
 {
+public:
+	void Reset();
+	void Tick();
+	void Start();
+	void Stop();
 
 };
-
-
 
 #endif
