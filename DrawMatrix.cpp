@@ -1,37 +1,36 @@
 #include <DirectXColors.h>
-#include "d3dInitForWindows.h"
+#include "DrawMatrix.h"
 
 using namespace DirectX;
 
-InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : D3DApp(hInstance)
+DrawMatrix::DrawMatrix(HINSTANCE hInstance) : D3DApp(hInstance)
 {
 	
 }
-
-InitDirect3DApp::~InitDirect3DApp()
+DrawMatrix::~DrawMatrix()
 {
-	
+
 }
 
-bool InitDirect3DApp::Initialize()
+bool DrawMatrix::Initialize()
 {
 	if (!D3DApp::Initialize())
 		return false;
-
 	return true;
 }
 
-void InitDirect3DApp::OnResize()
+void DrawMatrix::OnResize()
 {
-	D3DApp::OnResize();	
+	D3DApp::OnResize();
 }
 
-void InitDirect3DApp::Update(const GameTimer& gt)
+void DrawMatrix::Update(const GameTimer& gt)
 {
 	
 }
-void InitDirect3DApp::Draw(const GameTimer& gt)
-{	
+
+void DrawMatrix::Draw(const GameTimer& gt)
+{
 	// Reuse the memory associated with command recording.
 	// we can only  reset when the associated command lists have finished execution on the GPU.
 	ThrowIfFailed(mDirectCmdListAlloc->Reset());
@@ -42,7 +41,7 @@ void InitDirect3DApp::Draw(const GameTimer& gt)
 
 	// Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
-	D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
 	// Set the viewport and scissor rect. This needs to be reset whenever the command list is reset.
 	mCommandList->RSSetViewports(1, &mScreenViewport);
@@ -63,7 +62,7 @@ void InitDirect3DApp::Draw(const GameTimer& gt)
 	ThrowIfFailed(mCommandList->Close());
 
 	// Add the command list to the queue for execution.
-	ID3D12CommandList* cmdsLists[] = {mCommandList.Get()};
+	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
 	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
 	// swap the back and front buffers
@@ -74,4 +73,3 @@ void InitDirect3DApp::Draw(const GameTimer& gt)
 	// Later we will show how to organize our rendering code so we do not have to wait per frame
 	FlushCommandQueue();
 }
-

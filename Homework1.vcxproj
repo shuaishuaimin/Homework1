@@ -24,7 +24,9 @@
     <ClInclude Include="d3dUtil.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="DrawMatrix.h" />
     <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="UpLoadBuffer.h" />
     <ClInclude Include="MathHelper.h" />
   </ItemGroup>
   <ItemGroup>
@@ -32,6 +34,7 @@
     <ClCompile Include="d3dInitForWindows.cpp" />
     <ClCompile Include="d3dUtil.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="DrawMatrix.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="Init.cpp" />
     <ClCompile Include="MathHelper.cpp" />
