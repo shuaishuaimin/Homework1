@@ -8,7 +8,8 @@
 #include "d3dUtil.h"
 #include "GameTimer.h"
 
-#pragma comment(lib,"d3dcomiler.lib")
+// link necessary lib
+#pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
 
@@ -72,13 +73,13 @@ protected:
 	void CalculateFrameStats();
 
 	void LogAdapters();
-	void LogAdaperOutputs(IDXGIAdapter* adapter);
+	void LogAdapterOutputs(IDXGIAdapter* adapter);
 	void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
 
 protected:
 	
 	static D3DApp* mApp;
-
+	
 	HINSTANCE mhAppInst = nullptr; // application instance handle
 	HWND	  mhMainWnd = nullptr; // main window handle
 	bool	  mAppPaused = false; // is the application paused?
@@ -121,11 +122,11 @@ protected:
 	D3D12_RECT mScissorRect;
 
 	UINT mRtvDescriptorSize = 0;
-	UINT mDsvDescrtptorSize = 0;
+	UINT mDsvDescriptorSize = 0;
 	UINT mCbvSrvUavDescriptorSize = 0;
 
 	// Derived class should set these in derived constructor to customize starting values
-	std::wstring mMainWndCaption = L"d3d App"; // name
+	std::wstring mMainWndCaption = L"Charlotte Engine"; // name
 	D3D_DRIVER_TYPE md3dDriverType = D3D_DRIVER_TYPE_HARDWARE;
 	DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	DXGI_FORMAT mDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;

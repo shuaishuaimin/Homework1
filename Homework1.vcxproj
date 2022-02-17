@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dApp.h" />
+    <ClInclude Include="d3dInitForWindows.h" />
     <ClInclude Include="d3dUtil.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DDSTextureLoader.h" />
@@ -28,10 +29,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="d3dApp.cpp" />
-    <ClCompile Include="d3dInit.cpp" />
+    <ClCompile Include="d3dInitForWindows.cpp" />
     <ClCompile Include="d3dUtil.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="GameTimer.cpp" />
+    <ClCompile Include="Init.cpp" />
     <ClCompile Include="MathHelper.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
