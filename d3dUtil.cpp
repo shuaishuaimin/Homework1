@@ -1,7 +1,8 @@
-
+#include "stdafx.h"
 #include <comdef.h>
 #include <fstream>
 #include "d3dUtil.h"
+
 
 using Microsoft::WRL::ComPtr;
 

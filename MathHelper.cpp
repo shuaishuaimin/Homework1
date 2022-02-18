@@ -1,6 +1,8 @@
+#include "stdafx.h"
 #include <float.h>
 #include <cmath>
 #include "MathHelper.h"
+
 
 using namespace DirectX;
 

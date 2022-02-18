@@ -1,4 +1,6 @@
+#include "stdafx.h"
 #include "d3dInitForWindows.h"
+#include "DrawMatrix.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	PSTR cmdLine, int showCmd)
@@ -12,7 +14,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 
 	try
 	{
-		InitDirect3DApp theApp(hInstance);
+		DrawMatrix theApp(hInstance);
 		if (!theApp.Initialize())
 			return 0;
 

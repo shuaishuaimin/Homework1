@@ -26,6 +26,7 @@
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="DrawMatrix.h" />
     <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="UpLoadBuffer.h" />
     <ClInclude Include="MathHelper.h" />
   </ItemGroup>
@@ -38,6 +39,9 @@
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="Init.cpp" />
     <ClCompile Include="MathHelper.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -45,6 +49,7 @@
     <ProjectGuid>{9f79a99a-aa17-413a-bb17-c338bb64b924}</ProjectGuid>
     <RootNamespace>Homework1</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>CharlotteEngine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -112,7 +117,7 @@
       <ConformanceMode>Default</ConformanceMode>
       <AdditionalIncludeDirectories>D:\Rendering\DirectX\d3d12book-master</AdditionalIncludeDirectories>
       <OmitFramePointers />
-      <PrecompiledHeader />
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
     </ClCompile>

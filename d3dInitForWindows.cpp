@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <DirectXColors.h>
 #include "d3dInitForWindows.h"
 

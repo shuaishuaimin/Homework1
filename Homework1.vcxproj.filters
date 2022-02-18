@@ -48,6 +48,9 @@
     <ClInclude Include="UpLoadBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="d3dInitForWindows.cpp">
@@ -72,6 +75,9 @@
       <Filter>Source Files\D3DSourceCode</Filter>
     </ClCompile>
     <ClCompile Include="DrawMatrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
