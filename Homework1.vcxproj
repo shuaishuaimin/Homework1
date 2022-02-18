@@ -113,6 +113,8 @@
       <AdditionalIncludeDirectories>D:\Rendering\DirectX\d3d12book-master</AdditionalIncludeDirectories>
       <OmitFramePointers />
       <PrecompiledHeader />
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

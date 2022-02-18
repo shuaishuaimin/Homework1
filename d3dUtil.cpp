@@ -41,19 +41,21 @@ ComPtr<ID3D12Resource> d3dUtil::CreateDefaultBuffer(ID3D12Device* device,
 	ComPtr<ID3D12Resource> defaultBuffer;
 
 	// Create the actual default buffer resource.
+	auto HeapPropertiesOfDefault = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	auto ResourceHeap = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
 	ThrowIfFailed(device->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+		&HeapPropertiesOfDefault,
 		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer(byteSize),
+		&ResourceHeap,
 		D3D12_RESOURCE_STATE_COMMON,
 		nullptr, IID_PPV_ARGS(defaultBuffer.GetAddressOf())));
 
 	// for copy CPU memory data into our buffer, we need to create an intermediate upload heep
-
+	auto HeapPropertiesOfUpload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	ThrowIfFailed(device->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+		&HeapPropertiesOfUpload,
 		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer(byteSize),
+		&ResourceHeap,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		IID_PPV_ARGS(uploadBuffer.GetAddressOf())));
@@ -67,13 +69,14 @@ ComPtr<ID3D12Resource> d3dUtil::CreateDefaultBuffer(ID3D12Device* device,
 	// Schedule to copy the data to the default buffer resource.  At a high level, the helper function UpdateSubresources
 	// will copy the CPU memory into the intermediate upload heap.  Then, using ID3D12CommandList::CopySubresourceRegion,
 	// the intermediate upload heap data will be copied to mBuffer.
+	auto BarrierTransitionCommonToSCD = CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer.Get(),
+		D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
+	cmdList->ResourceBarrier(1, &BarrierTransitionCommonToSCD);
 
-	cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer.Get(), 
-		D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST));
-
+	auto BarrierTranstionSCDToRead = CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer.Get(),
+		D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
 	UpdateSubresources<1>(cmdList, defaultBuffer.Get(), uploadBuffer.Get(), 0, 0, 1, &subResourceData);
-	cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer.Get(),
-		D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ));
+	cmdList->ResourceBarrier(1, &BarrierTranstionSCDToRead);
 
 	// Note: uploadBuffer has to be kept alive after the above function calls because
 	// the command list has not been executed yet that performs the actual copy.
