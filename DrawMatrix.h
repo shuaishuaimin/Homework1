@@ -2,18 +2,7 @@
 #include "d3dApp.h"
 #include "MathHelper.h"
 #include "UploadBuffer.h"
-
-
-struct Vertex
-{
-	DirectX::XMFLOAT3 Pos;
-	DirectX::XMFLOAT4 Color;
-};
-
-struct ObjectConstants
-{
-	DirectX::XMFLOAT4X4 WorldViewProj = MathHelper::Identity4x4();
-};
+#include "DataStruct.h"
 
 class DrawMatrix : public D3DApp
 {
@@ -72,5 +61,9 @@ private:
 	float mPhi = DirectX::XM_PIDIV4;
 	float mRadius = 5.0f;
 
+	float mSensitivity = 0.25f;
+
+	std::vector<Vertex> vertices;
+	std::vector<uint16_t> indices;
 	POINT mLastMousePos;
 };
