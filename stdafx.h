@@ -22,3 +22,4 @@
 #include "d3dx12.h"
 #include "DDSTextureLoader.h"
 #include "MathHelper.h"
+#include "d3dApp.h"
