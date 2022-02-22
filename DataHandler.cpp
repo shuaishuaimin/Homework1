@@ -76,3 +76,36 @@ void DataHandler::LoadMesh(const std::string& FileName, FMeshInfoForPrint& MeshI
 	//	TempMeshInfo.LodInfos 
 	}
 }
+
+void DataHandler::LoadActors(const std::string& FileName, FActorsInfoForPrint& ActorInfos)
+{
+	FActorsInfoForPrint& TempActorInfos = ActorInfos;
+
+	int ActorsNum;
+	ifstream file("BinaryActorFiles/" + FileName, ios::in|ios::binary);
+	if (!file)
+	{
+		return;
+	}
+	file.read((char*)&ActorsNum, sizeof(int32_t));
+	for (int i = 0; i < ActorsNum; i++)
+	{
+		FActorInfo ActorInfo;
+		file.read((char*)&(ActorInfo.Transform.Rotation.x), sizeof(float));
+		file.read((char*)&(ActorInfo.Transform.Rotation.y), sizeof(float));
+		file.read((char*)&(ActorInfo.Transform.Rotation.z), sizeof(float));
+		file.read((char*)&(ActorInfo.Transform.Rotation.w), sizeof(float));
+		file.read((char*)&(ActorInfo.Transform.Translation.x), sizeof(float));
+		file.read((char*)&(ActorInfo.Transform.Translation.y), sizeof(float));
+		file.read((char*)&(ActorInfo.Transform.Translation.z), sizeof(float));
+		file.read((char*)&(ActorInfo.Transform.Scale3D.x), sizeof(float));
+		file.read((char*)&(ActorInfo.Transform.Scale3D.y), sizeof(float));
+		file.read((char*)&(ActorInfo.Transform.Scale3D.z), sizeof(float));
+		
+		int AssetNameLength = 0;
+		file.read((char*)&AssetNameLength, sizeof(int32_t));
+		ActorInfo.AssetName.resize(AssetNameLength);
+		file.read((char*)(ActorInfo.AssetName.data()), AssetNameLength);
+		TempActorInfos.ActorsInfo.push_back(ActorInfo);
+	}
+}

@@ -12,5 +12,7 @@ public:
 	virtual ~DataHandler();
 
 	static void LoadMesh(const std::string& FileName, FMeshInfoForPrint& MeshInfo);
+
+	static void LoadActors(const std::string& FileName, FActorsInfoForPrint& ActorInfos);
 };
 

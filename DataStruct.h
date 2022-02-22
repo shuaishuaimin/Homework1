@@ -17,13 +17,13 @@ struct FVector
 public:
 
 	/** Vector's X component. */
-	float x;
+	float x = 0.0f;
 
 	/** Vector's Y component. */
-	float y;
+	float y = 0.0f;
 
 	/** Vector's Z component. */
-	float z;
+	float z = 0.0f;
 
 	friend std::ostream& operator<<(std::ostream& os, const FVector& Vector)
 	{
@@ -57,10 +57,10 @@ struct FMeshInfoForPrint
 
 struct FVector4
 {
-	float x;
-	float y;
-	float z;
-	float w;
+	float x = 0.0f;
+	float y = 0.0f;
+	float z = 0.0f;
+	float w = 0.0f;
 
 	friend std::ostream& operator<<(std::ostream& os, const FVector4& Vector4)
 	{
@@ -97,3 +97,13 @@ struct FActorInfo
 	}
 };
 
+struct FActorsInfoForPrint
+{
+	std::vector<FActorInfo> ActorsInfo;
+};
+
+struct FMeshsInEnviroument
+{
+	std::string AssetName;
+	std::unique_ptr<MeshGeometry> MeshGeometryIns = nullptr;
+};

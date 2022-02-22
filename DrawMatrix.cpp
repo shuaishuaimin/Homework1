@@ -31,7 +31,8 @@ bool DrawMatrix::Initialize()
 	BulidConstantBuffers();
 	BuildRootSignature();
 	BuildShadersAndInputLayOut();
-	BuildBoxGeometry();
+	BuildBoxGeometry("MatineeCam_SM.dat");
+	BuildEnviroument("ThirdPersonExampleMap.dat");
 	BuildPSO();
 
 	ThrowIfFailed(mCommandList->Close());
@@ -69,7 +70,7 @@ void DrawMatrix::Update(const GameTimer& gt)
 
 	XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
 	XMStoreFloat4x4(&mView, view);
-
+	
 	XMMATRIX world = XMLoadFloat4x4(&mWorld);
 	XMMATRIX proj = XMLoadFloat4x4(&mProj);
 
@@ -114,19 +115,19 @@ void DrawMatrix::Draw(const GameTimer& gt)
 
 	// IA
 	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
-	auto VertexBufferView = mMeshGeo->VertexBufferView();
-	auto IndexBufferView = mMeshGeo->IndexBufferView();
-	mCommandList->IASetVertexBuffers(0, 1, &VertexBufferView);
-	mCommandList->IASetIndexBuffer(&IndexBufferView);
-	mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
-
-	auto count = mMeshGeo->DrawArgs["box"].IndexCount;
-	mCommandList->DrawIndexedInstanced(
-		mMeshGeo->DrawArgs["box"].IndexCount,
-		1, 0, 0, 0);
-
+	if (mMeshGeo)
+	{
+		auto VertexBufferView = mMeshGeo->VertexBufferView();
+		auto IndexBufferView = mMeshGeo->IndexBufferView();
+		mCommandList->IASetVertexBuffers(0, 1, &VertexBufferView);
+		mCommandList->IASetIndexBuffer(&IndexBufferView);
+		mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
+		auto count = mMeshGeo->DrawArgs["box"].IndexCount;
+		mCommandList->DrawIndexedInstanced(
+			mMeshGeo->DrawArgs["box"].IndexCount,
+			1, 0, 0, 0);
+	}
 	// Indicate a state transition on the resource usage.
 	auto BarrierTransRTToPresent = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -271,28 +272,29 @@ void DrawMatrix::BuildShadersAndInputLayOut()
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
 	};
 }
-void DrawMatrix::BuildBoxGeometry()
+void DrawMatrix::BuildBoxGeometry(const std::string& GeometryName, const FTransform& Transform)
 {
-	XMMATRIX matrix;
-	auto x = matrix.r[0];
-
-	string filename = "MatineeCam_SM.dat";
+	
 	FMeshInfoForPrint MeshInfo;
-	DataHandler::LoadMesh(filename, MeshInfo);
+	DataHandler::LoadMesh(GeometryName, MeshInfo);
+	std::string Name = GeometryName;
 	if (MeshInfo.LodInfos.size() <= 0)
 	{
 		return;
+		std::stringstream ss;
+		ss << GeometryName << "No result";
+		OutputDebugStringA(ss.str().c_str());
 	}
-
+	vertices.clear();
+	indices.clear();
 	auto ArrayData = MeshInfo.LodInfos[0].VerticesLocation.data();
-	std::vector<Vertex> vertices;
 	for (auto VertexLocation : MeshInfo.LodInfos[0].VerticesLocation)
 	{
 		Vertex vertex;
 		XMFLOAT3 Float3;
-		Float3.x = VertexLocation.x / 100.0f;
-		Float3.y = VertexLocation.y / 100.0f;
-		Float3.z = VertexLocation.z / 100.0f;
+		Float3.x = (VertexLocation.x + Transform.Translation.x)/ 100.0f;
+		Float3.y = (VertexLocation.y + Transform.Translation.y)/ 100.0f;
+		Float3.z = (VertexLocation.z + Transform.Translation.z)/ 100.0f;
 		vertex.Pos = Float3;
 		vertex.Color = XMFLOAT4(Colors::SeaGreen);
 		vertices.push_back(vertex);
@@ -322,7 +324,7 @@ void DrawMatrix::BuildBoxGeometry()
 
 	mMeshGeo->VertexByteStride = sizeof(Vertex);
 	mMeshGeo->VertexBufferByteSize = vbByteSize;
-	mMeshGeo->IndexFormat = DXGI_FORMAT_R16_SINT;
+	mMeshGeo->IndexFormat = DXGI_FORMAT_R16_UINT;
 	mMeshGeo->IndexBufferByteSize = ibByteSize;
 
 	SubmeshGeometry submesh;
@@ -332,6 +334,19 @@ void DrawMatrix::BuildBoxGeometry()
 
 	mMeshGeo->DrawArgs["box"] = submesh;
 }
+void DrawMatrix::BuildEnviroument(const std::string& GeometryName)
+{
+	FActorsInfoForPrint ActorInfos;
+	DataHandler::LoadActors(GeometryName, ActorInfos);
+	if (ActorInfos.ActorsInfo.size() <= 0) return;
+	for (auto EnviroumentActor : ActorInfos.ActorsInfo)
+	{	
+		std::string assetName = (EnviroumentActor.AssetName + ".dat");
+		
+		BuildBoxGeometry(assetName, EnviroumentActor.Transform);
+	}
+}
+
 void DrawMatrix::BuildPSO()
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;

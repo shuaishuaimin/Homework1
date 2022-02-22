@@ -33,7 +33,8 @@ private:
 	void BulidConstantBuffers();
 	void BuildRootSignature();
 	void BuildShadersAndInputLayOut();
-	void BuildBoxGeometry();
+	void BuildBoxGeometry(const std::string& GeometryName = "", const FTransform& Transform = FTransform());
+	void BuildEnviroument(const std::string& MapName = "");
 	void BuildPSO();
 
 private:
@@ -44,7 +45,8 @@ private:
 	std::unique_ptr<UploadBuffer<ObjectConstants>> mObjectCB = nullptr;
 
 	std::unique_ptr<MeshGeometry> mMeshGeo = nullptr;
-
+	std::vector<FMeshsInEnviroument> mEnviroument;
+	
 	Microsoft::WRL::ComPtr<ID3DBlob> mvsByteCode = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> mpsByteCode = nullptr;
 
