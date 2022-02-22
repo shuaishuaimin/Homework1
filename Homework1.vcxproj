@@ -28,6 +28,7 @@
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="DrawMatrix.h" />
     <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="Path\Path.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="UpLoadBuffer.h" />
     <ClInclude Include="MathHelper.h" />
@@ -42,8 +43,10 @@
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="Init.cpp" />
     <ClCompile Include="MathHelper.cpp" />
+    <ClCompile Include="Path\Path.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -151,6 +154,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #include <DirectXColors.h>
 #include "DrawMatrix.h"
+#include "DataHandler.h"
 
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 using namespace DirectX::PackedVector;
+using std::string;
 
 DrawMatrix::DrawMatrix(HINSTANCE hInstance) : D3DApp(hInstance)
 {
@@ -270,47 +272,31 @@ void DrawMatrix::BuildShadersAndInputLayOut()
 }
 void DrawMatrix::BuildBoxGeometry()
 {
-	std::array<Vertex, 8> vertices =
+	string filename = "1M_Cube.dat";
+	FMeshInfoForPrint MeshInfo;
+	DataHandler::LoadMesh(filename, MeshInfo);
+	if (MeshInfo.LodInfos.size() <= 0)
 	{
-		Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White) }),
-		Vertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Pink) }),
-		Vertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red) }),
-		Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Blue) }),
-		Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Green) }),
-		Vertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Gray) }),
-		Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Black) }),
-		Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Orange) })
-	};
+		return;
+	}
 
-	std::array<std::uint16_t, 36> indices =
+	auto ArrayData = MeshInfo.LodInfos[0].VerticesLocation.data();
+	std::vector<Vertex> vertices;
+	for (auto VertexLocation : MeshInfo.LodInfos[0].VerticesLocation)
 	{
-		// front face
-		0, 1, 2,
-		0, 2, 3,
-
-		// back face
-		4, 6, 5,
-		4, 7, 6,
-
-		// left face
-		4, 5, 1,
-		4, 1, 0,
-
-		// right face
-		3, 2, 6,
-		3, 6, 7,
-
-		// top face
-		1, 5, 6,
-		1, 6, 2,
-
-		// bottom face
-		4, 0, 3,
-		4, 3, 7
-	};
+		Vertex vertex;
+		XMFLOAT3 Float3;
+		Float3.x = VertexLocation.x;
+		Float3.y = VertexLocation.y;
+		Float3.z = VertexLocation.z;
+		vertex.Pos = Float3;
+		vertex.Color = XMFLOAT4(Colors::SeaGreen);
+		vertices.push_back(vertex);
+	}
+	std::vector<int> indices = MeshInfo.LodInfos[0].Indices;
 
 	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
-	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+	const UINT ibByteSize = (UINT)indices.size() * sizeof(int);
 
 	mMeshGeo = std::make_unique<MeshGeometry>();
 	mMeshGeo->Name = "meshGeo";

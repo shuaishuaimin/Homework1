@@ -22,6 +22,9 @@
     <Filter Include="Header Files\Data">
       <UniqueIdentifier>{6500a5ec-239e-4022-afb9-26961ba293a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Path">
+      <UniqueIdentifier>{57fe44f2-a44b-47ef-a6d3-aada68f119f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dInitForWindows.h">
@@ -60,6 +63,9 @@
     <ClInclude Include="DataHandler.h">
       <Filter>Header Files\Data</Filter>
     </ClInclude>
+    <ClInclude Include="Path\Path.h">
+      <Filter>Header Files\Path</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="d3dInitForWindows.cpp">
@@ -90,6 +96,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DataHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Path\Path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
