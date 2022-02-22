@@ -64,6 +64,6 @@ private:
 	float mSensitivity = 0.25f;
 
 	std::vector<Vertex> vertices;
-	std::vector<uint16_t> indices;
+	std::vector<int16_t> indices;
 	POINT mLastMousePos;
 };

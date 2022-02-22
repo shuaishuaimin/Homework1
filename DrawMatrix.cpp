@@ -2,6 +2,7 @@
 #include <DirectXColors.h>
 #include "DrawMatrix.h"
 #include "DataHandler.h"
+#include <cstdint>
 
 
 using namespace DirectX;
@@ -76,7 +77,7 @@ void DrawMatrix::Update(const GameTimer& gt)
 
 	// update the constant buffer with the latest worldviewproj matrix
 	ObjectConstants objConstants;
-	XMStoreFloat4x4(&objConstants.WorldViewProj, XMMatrixTranspose(worldViewProj));
+	XMStoreFloat4x4(&objConstants.TransMatrix, XMMatrixTranspose(worldViewProj));
 	mObjectCB->CopyData(0, objConstants);
 }
 
@@ -272,7 +273,10 @@ void DrawMatrix::BuildShadersAndInputLayOut()
 }
 void DrawMatrix::BuildBoxGeometry()
 {
-	string filename = "1M_Cube.dat";
+	XMMATRIX matrix;
+	auto x = matrix.r[0];
+
+	string filename = "MatineeCam_SM.dat";
 	FMeshInfoForPrint MeshInfo;
 	DataHandler::LoadMesh(filename, MeshInfo);
 	if (MeshInfo.LodInfos.size() <= 0)
@@ -286,15 +290,18 @@ void DrawMatrix::BuildBoxGeometry()
 	{
 		Vertex vertex;
 		XMFLOAT3 Float3;
-		Float3.x = VertexLocation.x;
-		Float3.y = VertexLocation.y;
-		Float3.z = VertexLocation.z;
+		Float3.x = VertexLocation.x / 100.0f;
+		Float3.y = VertexLocation.y / 100.0f;
+		Float3.z = VertexLocation.z / 100.0f;
 		vertex.Pos = Float3;
 		vertex.Color = XMFLOAT4(Colors::SeaGreen);
 		vertices.push_back(vertex);
 	}
-	std::vector<int> indices = MeshInfo.LodInfos[0].Indices;
-
+	for (auto index : MeshInfo.LodInfos[0].Indices)
+	{
+		indices.push_back(static_cast<int16_t>(index));
+	}
+	
 	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(int);
 
@@ -315,7 +322,7 @@ void DrawMatrix::BuildBoxGeometry()
 
 	mMeshGeo->VertexByteStride = sizeof(Vertex);
 	mMeshGeo->VertexBufferByteSize = vbByteSize;
-	mMeshGeo->IndexFormat = DXGI_FORMAT_R16_UINT;
+	mMeshGeo->IndexFormat = DXGI_FORMAT_R16_SINT;
 	mMeshGeo->IndexBufferByteSize = ibByteSize;
 
 	SubmeshGeometry submesh;
