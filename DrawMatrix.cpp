@@ -31,7 +31,7 @@ bool DrawMatrix::Initialize()
 	BulidConstantBuffers();
 	BuildRootSignature();
 	BuildShadersAndInputLayOut();
-	BuildBoxGeometry("MatineeCam_SM.dat");
+	//BuildBoxGeometry("MatineeCam_SM.dat");
 	BuildEnviroument("ThirdPersonExampleMap.dat");
 	BuildPSO();
 
@@ -115,19 +115,18 @@ void DrawMatrix::Draw(const GameTimer& gt)
 
 	// IA
 	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
-	if (mMeshGeo)
-	{
+	
 		auto VertexBufferView = mMeshGeo->VertexBufferView();
 		auto IndexBufferView = mMeshGeo->IndexBufferView();
 		mCommandList->IASetVertexBuffers(0, 1, &VertexBufferView);
 		mCommandList->IASetIndexBuffer(&IndexBufferView);
 		mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
-		auto count = mMeshGeo->DrawArgs["box"].IndexCount;
+		auto count = mMeshGeo->DrawArgs["MainEnviroument"].IndexCount;
 		mCommandList->DrawIndexedInstanced(
-			mMeshGeo->DrawArgs["box"].IndexCount,
+			mMeshGeo->DrawArgs["MainEnviroument"].IndexCount,
 			1, 0, 0, 0);
-	}
+
 	// Indicate a state transition on the resource usage.
 	auto BarrierTransRTToPresent = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -185,7 +184,7 @@ void DrawMatrix::OnMouseMove(WPARAM btnState, int x, int y)
 		mRadius += dx - dy;
 
 		// Restrict the radius
-		mRadius = MathHelper::Clamp(mRadius, 3.0f, 15.0f);
+		mRadius = MathHelper::Clamp(mRadius, 30.0f, 150.0f);
 	}
 
 	mLastMousePos.x = x;
@@ -272,7 +271,7 @@ void DrawMatrix::BuildShadersAndInputLayOut()
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
 	};
 }
-void DrawMatrix::BuildBoxGeometry(const std::string& GeometryName, const FTransform& Transform)
+void DrawMatrix::CalcVerticesAndIndices(const std::string& GeometryName, const FTransform& Transform)
 {
 	
 	FMeshInfoForPrint MeshInfo;
@@ -285,8 +284,6 @@ void DrawMatrix::BuildBoxGeometry(const std::string& GeometryName, const FTransf
 		ss << GeometryName << "No result";
 		OutputDebugStringA(ss.str().c_str());
 	}
-	vertices.clear();
-	indices.clear();
 	auto ArrayData = MeshInfo.LodInfos[0].VerticesLocation.data();
 	for (auto VertexLocation : MeshInfo.LodInfos[0].VerticesLocation)
 	{
@@ -297,15 +294,21 @@ void DrawMatrix::BuildBoxGeometry(const std::string& GeometryName, const FTransf
 		Float3.z = (VertexLocation.z + Transform.Translation.z)/ 100.0f;
 		vertex.Pos = Float3;
 		vertex.Color = XMFLOAT4(Colors::SeaGreen);
+		auto Color = Colors::SeaGreen;
 		vertices.push_back(vertex);
 	}
 	for (auto index : MeshInfo.LodInfos[0].Indices)
 	{
 		indices.push_back(static_cast<int16_t>(index));
 	}
-	
+	FileNames.push_back(GeometryName);
+}
+
+void DrawMatrix::BuildBoxGeometry1()
+{
 	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(int);
+	
 
 	mMeshGeo = std::make_unique<MeshGeometry>();
 	mMeshGeo->Name = "meshGeo";
@@ -332,19 +335,26 @@ void DrawMatrix::BuildBoxGeometry(const std::string& GeometryName, const FTransf
 	submesh.StartIndexLocation = 0;
 	submesh.BaseVertexLocation = 0;
 
-	mMeshGeo->DrawArgs["box"] = submesh;
+	mMeshGeo->DrawArgs["MainEnviroument"] = submesh;
 }
 void DrawMatrix::BuildEnviroument(const std::string& GeometryName)
 {
 	FActorsInfoForPrint ActorInfos;
 	DataHandler::LoadActors(GeometryName, ActorInfos);
 	if (ActorInfos.ActorsInfo.size() <= 0) return;
-	for (auto EnviroumentActor : ActorInfos.ActorsInfo)
+	for (const auto& EnviroumentActor : ActorInfos.ActorsInfo)
 	{	
-		std::string assetName = (EnviroumentActor.AssetName + ".dat");
-		
-		BuildBoxGeometry(assetName, EnviroumentActor.Transform);
+		std::string assetName = EnviroumentActor.AssetName;
+		if (assetName.size() <= 0)
+		{
+			continue;
+		}
+		assetName.erase(assetName.size() - 1, 1);
+		assetName += ".dat";
+		//OutputDebugStringA(assetName.c_str());
+		CalcVerticesAndIndices(assetName, EnviroumentActor.Transform);
 	}
+	BuildBoxGeometry1();
 }
 
 void DrawMatrix::BuildPSO()

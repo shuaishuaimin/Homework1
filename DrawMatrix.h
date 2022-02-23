@@ -33,7 +33,8 @@ private:
 	void BulidConstantBuffers();
 	void BuildRootSignature();
 	void BuildShadersAndInputLayOut();
-	void BuildBoxGeometry(const std::string& GeometryName = "", const FTransform& Transform = FTransform());
+	void CalcVerticesAndIndices(const std::string& GeometryName = "", const FTransform& Transform = FTransform());
+	void BuildBoxGeometry1();
 	void BuildEnviroument(const std::string& MapName = "");
 	void BuildPSO();
 
@@ -46,6 +47,9 @@ private:
 
 	std::unique_ptr<MeshGeometry> mMeshGeo = nullptr;
 	std::vector<FMeshsInEnviroument> mEnviroument;
+	std::vector<std::string> FileNames;
+
+	std::vector<DirectX::XMVECTORF32> TestColors;
 	
 	Microsoft::WRL::ComPtr<ID3DBlob> mvsByteCode = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> mpsByteCode = nullptr;
@@ -61,7 +65,7 @@ private:
 	// this num we can change
 	float mTheta = 1.5f * DirectX::XM_PI;	//??
 	float mPhi = DirectX::XM_PIDIV4;
-	float mRadius = 5.0f;
+	float mRadius = 50.0f;
 
 	float mSensitivity = 0.25f;
 
