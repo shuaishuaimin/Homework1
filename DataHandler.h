@@ -11,8 +11,8 @@ public:
 	DataHandler& operator=(const DataHandler& datahandler) = delete;
 	virtual ~DataHandler();
 
-	static void LoadMesh(const std::string& FileName, FMeshInfoForPrint& MeshInfo);
+	static void LoadMesh(const std::string& FileName, Charalotte::FMeshInfoForPrint& MeshInfo);
 
-	static void LoadActors(const std::string& FileName, FActorsInfoForPrint& ActorInfos);
+	static void LoadActors(const std::string& FileName, Charalotte::FActorsInfoForPrint& ActorInfos);
 };
 

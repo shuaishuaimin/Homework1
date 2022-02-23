@@ -26,7 +26,6 @@ bool DrawMatrix::Initialize()
 
 	// reset
 	ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
-
 	BuildDescriptorHeaps();
 	BulidConstantBuffers();
 	BuildRootSignature();
@@ -34,6 +33,7 @@ bool DrawMatrix::Initialize()
 	//BuildBoxGeometry("MatineeCam_SM.dat");
 	BuildEnviroument("ThirdPersonExampleMap.dat");
 	BuildPSO();
+	TestFunc();
 
 	ThrowIfFailed(mCommandList->Close());
 	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
@@ -77,7 +77,7 @@ void DrawMatrix::Update(const GameTimer& gt)
 	XMMATRIX worldViewProj = world*view*proj;
 
 	// update the constant buffer with the latest worldviewproj matrix
-	ObjectConstants objConstants;
+	Charalotte::ObjectConstants objConstants;
 	XMStoreFloat4x4(&objConstants.TransMatrix, XMMatrixTranspose(worldViewProj));
 	mObjectCB->CopyData(0, objConstants);
 }
@@ -115,18 +115,21 @@ void DrawMatrix::Draw(const GameTimer& gt)
 
 	// IA
 	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
-	
-		auto VertexBufferView = mMeshGeo->VertexBufferView();
-		auto IndexBufferView = mMeshGeo->IndexBufferView();
-		mCommandList->IASetVertexBuffers(0, 1, &VertexBufferView);
-		mCommandList->IASetIndexBuffer(&IndexBufferView);
-		mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
-		auto count = mMeshGeo->DrawArgs["MainEnviroument"].IndexCount;
-		mCommandList->DrawIndexedInstanced(
-			mMeshGeo->DrawArgs["MainEnviroument"].IndexCount,
-			1, 0, 0, 0);
 
+	auto VertexBufferView = mMeshGeo->VertexBufferView();
+	auto IndexBufferView = mMeshGeo->IndexBufferView();
+	mCommandList->IASetVertexBuffers(0, 1, &VertexBufferView);
+	mCommandList->IASetIndexBuffer(&IndexBufferView);
+	mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
+	for (const auto& MeshName : NameMeshDir)
+	{
+		auto count = mMeshGeo->DrawArgs[MeshName.first].IndexCount;
+		mCommandList->DrawIndexedInstanced(
+			mMeshGeo->DrawArgs[MeshName.first].IndexCount,
+			1, 0, 0, 0);
+	}
+		
 	// Indicate a state transition on the resource usage.
 	auto BarrierTransRTToPresent = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -203,9 +206,9 @@ void DrawMatrix::BuildDescriptorHeaps()
 }
 void DrawMatrix::BulidConstantBuffers()
 {
-	mObjectCB = std::make_unique<UploadBuffer<ObjectConstants>>(md3dDevice.Get(), 1, true);
+	mObjectCB = std::make_unique<UploadBuffer<Charalotte::ObjectConstants>>(md3dDevice.Get(), 1, true);
 
-	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
+	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(Charalotte::ObjectConstants));
 
 	D3D12_GPU_VIRTUAL_ADDRESS cbAddress = mObjectCB->Resource()->GetGPUVirtualAddress();
 	// Offset to the ith object constant buffer in the buffer.
@@ -216,7 +219,7 @@ void DrawMatrix::BulidConstantBuffers()
 
 	D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc;
 	cbvDesc.BufferLocation = cbAddress;
-	cbvDesc.SizeInBytes = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
+	cbvDesc.SizeInBytes = d3dUtil::CalcConstantBufferByteSize(sizeof(Charalotte::ObjectConstants));
 
 	md3dDevice->CreateConstantBufferView(
 		&cbvDesc,
@@ -271,10 +274,10 @@ void DrawMatrix::BuildShadersAndInputLayOut()
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
 	};
 }
-void DrawMatrix::CalcVerticesAndIndices(const std::string& GeometryName, const FTransform& Transform)
+void DrawMatrix::CalcVerticesAndIndices(const std::string& GeometryName, const Charalotte::FTransform& Transform)
 {
 	
-	FMeshInfoForPrint MeshInfo;
+	Charalotte::FMeshInfoForPrint MeshInfo;
 	DataHandler::LoadMesh(GeometryName, MeshInfo);
 	std::string Name = GeometryName;
 	if (MeshInfo.LodInfos.size() <= 0)
@@ -285,28 +288,33 @@ void DrawMatrix::CalcVerticesAndIndices(const std::string& GeometryName, const F
 		OutputDebugStringA(ss.str().c_str());
 	}
 	auto ArrayData = MeshInfo.LodInfos[0].VerticesLocation.data();
-	for (auto VertexLocation : MeshInfo.LodInfos[0].VerticesLocation)
+	for (const auto& VertexLocation : MeshInfo.LodInfos[0].VerticesLocation)
 	{
-		Vertex vertex;
+		Charalotte::Vertex vertex;
 		XMFLOAT3 Float3;
 		Float3.x = (VertexLocation.x + Transform.Translation.x)/ 100.0f;
 		Float3.y = (VertexLocation.y + Transform.Translation.y)/ 100.0f;
 		Float3.z = (VertexLocation.z + Transform.Translation.z)/ 100.0f;
 		vertex.Pos = Float3;
 		vertex.Color = XMFLOAT4(Colors::SeaGreen);
-		auto Color = Colors::SeaGreen;
 		vertices.push_back(vertex);
 	}
-	for (auto index : MeshInfo.LodInfos[0].Indices)
+	for (const auto& index : MeshInfo.LodInfos[0].Indices)
 	{
 		indices.push_back(static_cast<int16_t>(index));
 	}
-	FileNames.push_back(GeometryName);
+
+	SubmeshGeometry submesh;
+	submesh.IndexCount = (UINT)(MeshInfo.LodInfos[0].Indices.size());
+	submesh.StartIndexLocation = 0;
+	submesh.BaseVertexLocation = 0;
+
+	NameMeshDir.insert(std::make_pair(Name, submesh));
 }
 
 void DrawMatrix::BuildBoxGeometry1()
 {
-	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Charalotte::Vertex);
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(int);
 	
 
@@ -325,21 +333,19 @@ void DrawMatrix::BuildBoxGeometry1()
 	mMeshGeo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
 		mCommandList.Get(), indices.data(), ibByteSize, mMeshGeo->IndexBufferUploader);
 
-	mMeshGeo->VertexByteStride = sizeof(Vertex);
+	mMeshGeo->VertexByteStride = sizeof(Charalotte::Vertex);
 	mMeshGeo->VertexBufferByteSize = vbByteSize;
 	mMeshGeo->IndexFormat = DXGI_FORMAT_R16_UINT;
 	mMeshGeo->IndexBufferByteSize = ibByteSize;
 
-	SubmeshGeometry submesh;
-	submesh.IndexCount = (UINT)indices.size();
-	submesh.StartIndexLocation = 0;
-	submesh.BaseVertexLocation = 0;
-
-	mMeshGeo->DrawArgs["MainEnviroument"] = submesh;
+	for (const auto& MeshNameDir : NameMeshDir)
+	{
+		mMeshGeo->DrawArgs[MeshNameDir.first] = MeshNameDir.second;
+	}
 }
 void DrawMatrix::BuildEnviroument(const std::string& GeometryName)
 {
-	FActorsInfoForPrint ActorInfos;
+	Charalotte::FActorsInfoForPrint ActorInfos;
 	DataHandler::LoadActors(GeometryName, ActorInfos);
 	if (ActorInfos.ActorsInfo.size() <= 0) return;
 	for (const auto& EnviroumentActor : ActorInfos.ActorsInfo)
@@ -378,6 +384,7 @@ void DrawMatrix::BuildPSO()
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	psoDesc.SampleMask = UINT_MAX;
+	// D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.RTVFormats[0] = mBackBufferFormat;
@@ -387,3 +394,7 @@ void DrawMatrix::BuildPSO()
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSO)));
 }
 
+void DrawMatrix::TestFunc()
+{
+	XMMATRIX Test = XMMatrixTranslation(1.0F, 2.0F, 3.0F);
+}

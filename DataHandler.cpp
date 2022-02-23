@@ -17,9 +17,9 @@ DataHandler::~DataHandler()
 
 }
 
-void DataHandler::LoadMesh(const std::string& FileName, FMeshInfoForPrint& MeshInfo)
+void DataHandler::LoadMesh(const std::string& FileName, Charalotte::FMeshInfoForPrint& MeshInfo)
 {
-	FMeshInfoForPrint& TempMeshInfo = MeshInfo;
+	Charalotte::FMeshInfoForPrint& TempMeshInfo = MeshInfo;
 	ifstream file("BinaryMeshFiles/" + FileName, ios::in|ios::binary);
 	if (!file)
 	{
@@ -49,7 +49,7 @@ void DataHandler::LoadMesh(const std::string& FileName, FMeshInfoForPrint& MeshI
 	// we use this rule to get our file data
 	for (int index = 0; index < LODInfosSize; index++)
 	{
-		FLODInfo lodinfo;
+		Charalotte::FLODInfo lodinfo;
 		file.read((char*)&(lodinfo.VerticesNum), sizeof(int));
 		file.read((char*)&(lodinfo.TrianglesNum), sizeof(int));
 		file.read((char*)&(lodinfo.IndicesNum), sizeof(int));
@@ -58,7 +58,7 @@ void DataHandler::LoadMesh(const std::string& FileName, FMeshInfoForPrint& MeshI
 		file.read((char*)&VerticesLocationnum, sizeof(int));
 		for (int VerIndex = 0; VerIndex < VerticesLocationnum; VerIndex++)
 		{
-			FVector VertexLocation;
+			Charalotte::FVector VertexLocation;
 			file.read((char*)&(VertexLocation.x), sizeof(float));
 			file.read((char*)&(VertexLocation.y), sizeof(float));
 			file.read((char*)&(VertexLocation.z), sizeof(float));
@@ -77,9 +77,9 @@ void DataHandler::LoadMesh(const std::string& FileName, FMeshInfoForPrint& MeshI
 	}
 }
 
-void DataHandler::LoadActors(const std::string& FileName, FActorsInfoForPrint& ActorInfos)
+void DataHandler::LoadActors(const std::string& FileName, Charalotte::FActorsInfoForPrint& ActorInfos)
 {
-	FActorsInfoForPrint& TempActorInfos = ActorInfos;
+	Charalotte::FActorsInfoForPrint& TempActorInfos = ActorInfos;
 
 	int ActorsNum;
 	ifstream file("BinaryActorFiles/" + FileName, ios::in|ios::binary);
@@ -90,7 +90,7 @@ void DataHandler::LoadActors(const std::string& FileName, FActorsInfoForPrint& A
 	file.read((char*)&ActorsNum, sizeof(int32_t));
 	for (int i = 0; i < ActorsNum; i++)
 	{
-		FActorInfo ActorInfo;
+		Charalotte::FActorInfo ActorInfo;
 		file.read((char*)&(ActorInfo.Transform.Rotation.x), sizeof(float));
 		file.read((char*)&(ActorInfo.Transform.Rotation.y), sizeof(float));
 		file.read((char*)&(ActorInfo.Transform.Rotation.z), sizeof(float));

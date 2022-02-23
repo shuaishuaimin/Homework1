@@ -33,21 +33,23 @@ private:
 	void BulidConstantBuffers();
 	void BuildRootSignature();
 	void BuildShadersAndInputLayOut();
-	void CalcVerticesAndIndices(const std::string& GeometryName = "", const FTransform& Transform = FTransform());
+	void CalcVerticesAndIndices(const std::string& GeometryName = "", const Charalotte::FTransform& Transform = Charalotte::FTransform());
 	void BuildBoxGeometry1();
 	void BuildEnviroument(const std::string& MapName = "");
 	void BuildPSO();
+
+	void TestFunc();
 
 private:
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mCbvHeap = nullptr;
 
-	std::unique_ptr<UploadBuffer<ObjectConstants>> mObjectCB = nullptr;
+	std::unique_ptr<UploadBuffer<Charalotte::ObjectConstants>> mObjectCB = nullptr;
 
 	std::unique_ptr<MeshGeometry> mMeshGeo = nullptr;
-	std::vector<FMeshsInEnviroument> mEnviroument;
-	std::vector<std::string> FileNames;
+	std::vector<Charalotte::FMeshsInEnviroument> mEnviroument;
+	std::unordered_map<std::string, SubmeshGeometry> NameMeshDir;
 
 	std::vector<DirectX::XMVECTORF32> TestColors;
 	
@@ -69,7 +71,7 @@ private:
 
 	float mSensitivity = 0.25f;
 
-	std::vector<Vertex> vertices;
+	std::vector<Charalotte::Vertex> vertices;
 	std::vector<int16_t> indices;
 	POINT mLastMousePos;
 };

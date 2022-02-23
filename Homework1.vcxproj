@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="d3dApp.h" />
     <ClInclude Include="d3dInitForWindows.h" />
     <ClInclude Include="d3dUtil.h" />
@@ -34,6 +35,7 @@
     <ClInclude Include="MathHelper.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="d3dApp.cpp" />
     <ClCompile Include="d3dInitForWindows.cpp" />
     <ClCompile Include="d3dUtil.cpp" />
