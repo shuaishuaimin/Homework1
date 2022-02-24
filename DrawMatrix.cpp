@@ -292,6 +292,8 @@ void DrawMatrix::CalcVerticesAndIndices(const std::string& GeometryName, const C
 	{
 		Charalotte::Vertex vertex;
 		XMFLOAT3 Float3;
+		// now we only use translation, because i have some idea to deal with the 
+		// rotation and scale but i need some time to come true
 		Float3.x = (VertexLocation.x + Transform.Translation.x)/ 100.0f;
 		Float3.y = (VertexLocation.y + Transform.Translation.y)/ 100.0f;
 		Float3.z = (VertexLocation.z + Transform.Translation.z)/ 100.0f;
