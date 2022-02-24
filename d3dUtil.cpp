@@ -51,7 +51,7 @@ ComPtr<ID3D12Resource> d3dUtil::CreateDefaultBuffer(ID3D12Device* device,
 		D3D12_RESOURCE_STATE_COMMON,
 		nullptr, IID_PPV_ARGS(defaultBuffer.GetAddressOf())));
 
-	// for copy CPU memory data into our buffer, we need to create an intermediate upload heep
+	// for copy CPU memory data into our buffer, we need to create an intermediate upload heap
 	auto HeapPropertiesOfUpload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	ThrowIfFailed(device->CreateCommittedResource(
 		&HeapPropertiesOfUpload,

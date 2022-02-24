@@ -31,7 +31,6 @@ void Camera::TransformCamera(const Charalotte::CameraTransform& Transform, Direc
 	XMStoreFloat4(&LocationFloat, MainCameraData.Location);
 	XMMATRIX TransToZero = XMMatrixTranslation(-1.0f* LocationFloat.x, -1.0f* LocationFloat.y, -1.0f* LocationFloat.z);
 	XMMATRIX TransZeroToBack = XMMatrixTranslation(LocationFloat.x, LocationFloat.y, LocationFloat.z);
-	XMMATRIX TransMatrix = XMMatrixTranslation(Transform.Translation.x, Transform.Translation.y, Transform.Translation.z);
 }
 
 void Camera::ChangeAspectRatio(float NewAspectRatio)

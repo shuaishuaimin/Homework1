@@ -10,7 +10,7 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX::PackedVector;
 using std::string;
 
-DrawMatrix::DrawMatrix(HINSTANCE hInstance) : D3DApp(hInstance), ColorIndex(0)
+DrawMatrix::DrawMatrix(HINSTANCE hInstance) : D3DApp(hInstance), ColorIndex(0), VertexNumDrawed(0)
 {
 	TestColors.push_back(XMFLOAT4(Colors::Blue));
 	TestColors.push_back(XMFLOAT4(Colors::DarkGray));
@@ -309,22 +309,39 @@ void DrawMatrix::CalcVerticesAndIndices(const std::string& GeometryName, const C
 	{
 		Charalotte::Vertex vertex;
 		XMFLOAT3 Float3;
+		XMMATRIX Transport;
 		// now we only use translation, because i have some idea to deal with the 
 		// rotation and scale but i need some time to come true
-		Float3.x = (VertexLocation.x + Transform.Translation.x)/ 100.0f;
-		Float3.y = (VertexLocation.y + Transform.Translation.y)/ 100.0f;
-		Float3.z = (VertexLocation.z + Transform.Translation.z)/ 100.0f;
-		vertex.Pos = Float3;
 		
+		// execute scale transport
+		XMMATRIX ScaleTrans = XMMatrixScaling(Transform.Scale3D.x, Transform.Scale3D.y, Transform.Scale3D.z);
+		XMFLOAT4 NowLocation{ VertexLocation.x, VertexLocation.y, VertexLocation.z, 1.0f};
+		XMVECTOR MeshLocationVector = XMLoadFloat4(&NowLocation);
 
+		// execute rotate transport
+		XMMATRIX RotateTrans = XMMatrixRotationRollPitchYaw(Transform.Rotation.y, Transform.Rotation.z, Transform.Rotation.x);
+		Transport = ScaleTrans;
+
+		MeshLocationVector = MathHelper::VectorMultipyMatrix(MeshLocationVector, XMMatrixTranspose(Transport));
+		XMStoreFloat4(&NowLocation, MeshLocationVector);
+		
+		// execute  transport
+		Float3.x = (NowLocation.x + Transform.Translation.x) / 100.0f;
+		Float3.y = (NowLocation.y + Transform.Translation.y) / 100.0f;
+		Float3.z = (NowLocation.z + Transform.Translation.z) / 100.0f;
+
+		vertex.Pos = Float3;
 		vertex.Color = VertexColor;
 		vertices.push_back(vertex);
 	}
 	
 	for (const auto& index : MeshInfo.LodInfos[0].Indices)
 	{
-		indices.push_back(static_cast<int16_t>(index));
+		int32_t VertexIndex = index;
+		VertexIndex += VertexNumDrawed;
+		indices.push_back(static_cast<int16_t>(VertexIndex));
 	}
+	VertexNumDrawed += MeshInfo.LodInfos[0].VerticesNum;
 
 	SubmeshGeometry submesh;
 	submesh.IndexCount = (UINT)(MeshInfo.LodInfos[0].Indices.size());
@@ -334,7 +351,7 @@ void DrawMatrix::CalcVerticesAndIndices(const std::string& GeometryName, const C
 	NameMeshDir.insert(std::make_pair(Name, submesh));
 }
 
-void DrawMatrix::BuildBoxGeometry1()
+void DrawMatrix::BuildMeshGeometrys()
 {
 	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Charalotte::Vertex);
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(int);
@@ -382,7 +399,7 @@ void DrawMatrix::BuildEnviroument(const std::string& GeometryName)
 		//OutputDebugStringA(assetName.c_str());
 		CalcVerticesAndIndices(assetName, EnviroumentActor.Transform);
 	}
-	BuildBoxGeometry1();
+	BuildMeshGeometrys();
 }
 
 void DrawMatrix::BuildPSO()

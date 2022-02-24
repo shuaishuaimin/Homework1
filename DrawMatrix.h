@@ -34,7 +34,7 @@ private:
 	void BuildRootSignature();
 	void BuildShadersAndInputLayOut();
 	void CalcVerticesAndIndices(const std::string& GeometryName = "", const Charalotte::FTransform& Transform = Charalotte::FTransform());
-	void BuildBoxGeometry1();
+	void BuildMeshGeometrys();
 	void BuildEnviroument(const std::string& MapName = "");
 	void BuildPSO();
 
@@ -75,4 +75,5 @@ private:
 	std::vector<int16_t> indices;
 	POINT mLastMousePos;
 	int ColorIndex;
+	int VertexNumDrawed;
 };
