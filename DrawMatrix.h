@@ -51,7 +51,7 @@ private:
 	std::vector<Charalotte::FMeshsInEnviroument> mEnviroument;
 	std::unordered_map<std::string, SubmeshGeometry> NameMeshDir;
 
-	std::vector<DirectX::XMVECTORF32> TestColors;
+	std::vector<DirectX::XMFLOAT4> TestColors;
 	
 	Microsoft::WRL::ComPtr<ID3DBlob> mvsByteCode = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> mpsByteCode = nullptr;
@@ -74,4 +74,5 @@ private:
 	std::vector<Charalotte::Vertex> vertices;
 	std::vector<int16_t> indices;
 	POINT mLastMousePos;
+	int ColorIndex;
 };

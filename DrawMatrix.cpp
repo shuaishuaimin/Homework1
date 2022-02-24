@@ -10,9 +10,14 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX::PackedVector;
 using std::string;
 
-DrawMatrix::DrawMatrix(HINSTANCE hInstance) : D3DApp(hInstance)
+DrawMatrix::DrawMatrix(HINSTANCE hInstance) : D3DApp(hInstance), ColorIndex(0)
 {
-	
+	TestColors.push_back(XMFLOAT4(Colors::Blue));
+	TestColors.push_back(XMFLOAT4(Colors::DarkGray));
+	TestColors.push_back(XMFLOAT4(Colors::LightPink));
+	TestColors.push_back(XMFLOAT4(Colors::Green));
+	TestColors.push_back(XMFLOAT4(Colors::Yellow));
+	TestColors.push_back(XMFLOAT4(Colors::Purple));
 }
 DrawMatrix::~DrawMatrix()
 {
@@ -119,7 +124,7 @@ void DrawMatrix::Draw(const GameTimer& gt)
 	auto IndexBufferView = mMeshGeo->IndexBufferView();
 	mCommandList->IASetVertexBuffers(0, 1, &VertexBufferView);
 	mCommandList->IASetIndexBuffer(&IndexBufferView);
-	mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
 	for (const auto& MeshName : NameMeshDir)
 	{
@@ -288,6 +293,18 @@ void DrawMatrix::CalcVerticesAndIndices(const std::string& GeometryName, const C
 		OutputDebugStringA(ss.str().c_str());
 	}
 	auto ArrayData = MeshInfo.LodInfos[0].VerticesLocation.data();
+	XMFLOAT4 VertexColor;
+	if (ColorIndex < TestColors.size())
+	{
+		VertexColor = TestColors[ColorIndex];
+		ColorIndex++;
+	}
+	else
+	{
+		ColorIndex = 0;
+		VertexColor = TestColors[ColorIndex];
+	}
+
 	for (const auto& VertexLocation : MeshInfo.LodInfos[0].VerticesLocation)
 	{
 		Charalotte::Vertex vertex;
@@ -298,9 +315,12 @@ void DrawMatrix::CalcVerticesAndIndices(const std::string& GeometryName, const C
 		Float3.y = (VertexLocation.y + Transform.Translation.y)/ 100.0f;
 		Float3.z = (VertexLocation.z + Transform.Translation.z)/ 100.0f;
 		vertex.Pos = Float3;
-		vertex.Color = XMFLOAT4(Colors::SeaGreen);
+		
+
+		vertex.Color = VertexColor;
 		vertices.push_back(vertex);
 	}
+	
 	for (const auto& index : MeshInfo.LodInfos[0].Indices)
 	{
 		indices.push_back(static_cast<int16_t>(index));
@@ -387,7 +407,7 @@ void DrawMatrix::BuildPSO()
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	psoDesc.SampleMask = UINT_MAX;
 	// D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
-	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.RTVFormats[0] = mBackBufferFormat;
 	psoDesc.SampleDesc.Count = m4xMsaaState ? 4 : 1;
