@@ -387,7 +387,7 @@ void DrawMatrix::BuildPSO()
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	psoDesc.SampleMask = UINT_MAX;
 	// D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
-	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.RTVFormats[0] = mBackBufferFormat;
 	psoDesc.SampleDesc.Count = m4xMsaaState ? 4 : 1;
