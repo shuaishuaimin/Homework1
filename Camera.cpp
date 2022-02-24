@@ -24,8 +24,13 @@ void Camera::GetMVPTransform(DirectX::XMMATRIX& Matrix)
 void Camera::TransformCamera(const Charalotte::CameraTransform& Transform, DirectX::XMMATRIX& NewMvpMatrix)
 {
 	XMMATRIX DisplacementMatrix = XMMatrixTranslation(Transform.Translation.x, Transform.Translation.y, Transform.Translation.z);
+	MainCameraData.Location = MathHelper::VectorMultipyMatrix(MainCameraData.Location, XMMatrixTranspose(DisplacementMatrix));
 	XMMATRIX RotateMatrix = XMMatrixRotationRollPitchYaw(Transform.pitch, Transform.yaw, Transform.row);
 
+	XMFLOAT4 LocationFloat;
+	XMStoreFloat4(&LocationFloat, MainCameraData.Location);
+	XMMATRIX TransToZero = XMMatrixTranslation(-1.0f* LocationFloat.x, -1.0f* LocationFloat.y, -1.0f* LocationFloat.z);
+	XMMATRIX TransZeroToBack = XMMatrixTranslation(LocationFloat.x, LocationFloat.y, LocationFloat.z);
 	XMMATRIX TransMatrix = XMMatrixTranslation(Transform.Translation.x, Transform.Translation.y, Transform.Translation.z);
 }
 

@@ -73,7 +73,6 @@ void DrawMatrix::Update(const GameTimer& gt)
 	
 	XMMATRIX world = XMLoadFloat4x4(&mWorld);
 	XMMATRIX proj = XMLoadFloat4x4(&mProj);
-
 	XMMATRIX worldViewProj = world*view*proj;
 
 	// update the constant buffer with the latest worldviewproj matrix
@@ -215,6 +214,7 @@ void DrawMatrix::BulidConstantBuffers()
 
 	// why we use 0??
 	int boxCBufIndex = 0;
+
 	cbAddress += boxCBufIndex * objCBByteSize;
 
 	D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc;

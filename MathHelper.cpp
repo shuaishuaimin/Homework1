@@ -78,3 +78,29 @@ XMVECTOR MathHelper::RandHemisphereUnitVec3(XMVECTOR n)
 		return XMVector3Normalize(v);
 	}
 }
+
+DirectX::XMVECTOR MathHelper::VectorMultipyMatrix(const DirectX::XMVECTOR& Vector, const DirectX::XMMATRIX& Matrix)
+{
+	XMVECTOR ResultVector;
+	XMFLOAT4 VectorFloat;
+	XMStoreFloat4(&VectorFloat, Vector);
+
+	XMFLOAT4X4 MatrixFloat;
+	XMStoreFloat4x4(&MatrixFloat, Matrix);
+
+	XMFLOAT4 ResultFloat;
+	ResultFloat.x = VectorFloat.x * MatrixFloat._11 + VectorFloat.y * MatrixFloat._21 
+					+ VectorFloat.z * MatrixFloat._31 + VectorFloat.w * MatrixFloat._41;
+
+	ResultFloat.y = VectorFloat.x * MatrixFloat._12 + VectorFloat.y * MatrixFloat._22
+		+ VectorFloat.z * MatrixFloat._32 + VectorFloat.w * MatrixFloat._42;
+
+	ResultFloat.z = VectorFloat.x * MatrixFloat._13 + VectorFloat.y * MatrixFloat._23
+		+ VectorFloat.z * MatrixFloat._33 + VectorFloat.w * MatrixFloat._43;
+
+	ResultFloat.w = VectorFloat.x * MatrixFloat._14 + VectorFloat.y * MatrixFloat._24
+		+ VectorFloat.z * MatrixFloat._34 + VectorFloat.w * MatrixFloat._44;
+
+	ResultVector = XMLoadFloat4(&ResultFloat);
+	return ResultVector;
+}
