@@ -120,7 +120,7 @@ void DrawMatrix::Draw(const GameTimer& gt)
 	auto IndexBufferView = mMeshGeo->IndexBufferView();
 	mCommandList->IASetVertexBuffers(0, 1, &VertexBufferView);
 	mCommandList->IASetIndexBuffer(&IndexBufferView);
-	mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
 	for (const auto& MeshName : NameMeshDir)
 	{
