@@ -28,8 +28,10 @@
     <ClInclude Include="DataStruct.h" />
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="DrawMatrix.h" />
+    <ClInclude Include="EngineAlgorithm.h" />
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="Path\Path.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="UpLoadBuffer.h" />
     <ClInclude Include="MathHelper.h" />
@@ -42,6 +44,7 @@
     <ClCompile Include="DataHandler.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="DrawMatrix.cpp" />
+    <ClCompile Include="EngineAlgorithm.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="Init.cpp" />
     <ClCompile Include="MathHelper.cpp" />
@@ -50,6 +53,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CharlotteEngine.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
